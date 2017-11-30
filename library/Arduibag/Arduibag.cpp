@@ -20,17 +20,17 @@
 #define DHTTYPE DHT11   // DHT 11 sensor type
 
 //Realtime clock configuration
-#define RSDA 4
-#define RSCL 5
+//#define RSDA 4
+//#define RSCL 5
 
 //Hardware setup
 //Display configuration
 RGBmatrixPanel matrix(A, B, C, CLK, LAT, OE, false);
 
 //Realtime clock configuration
-DS3231  rtc(SDA, SCL);
-Time ti;
-Time ti_init;
+DS3231  rtc;
+RTCDateTime ti;
+RTCDateTime ti_init;
 
 //Temperature sensor configuration
 DHT dht(DHTPIN, DHTTYPE);
@@ -46,18 +46,22 @@ Arduibag::Arduibag(bool LANG)
 void Arduibag::begin() {
 
    
-   
+  Serial.println("matrix begin"); 
   // LED Matrix Setup  
   matrix.begin();
-  
+  Serial.println("matrix end"); 
   // DHT temperature sensor Setup
+  Serial.println("dht begin"); 
   dht.begin();
-  
+  Serial.println("dht end"); 
   //Realtime clock Setup
+  Serial.println("rtc begin"); 
   rtc.begin();
-
+   Serial.println("rtc end"); 
   //keep current time for travel time
-  ti_init = rtc.getTime();
+  Serial.println("getime strat");
+  ti_init = rtc.getDateTime();
+  Serial.println("getime end");
 }
 
 //----------------------------------
@@ -73,7 +77,7 @@ void Arduibag::clearScreen() {
 void Arduibag::displayLogo() {
   short x, y, c=0;
   int color;
-
+  Serial.println("Alors quoi ???");
   matrix.fillScreen(matrix.Color333(0, 0, 0));
   for (y=0;y<16;y++) {
       for (x=0;x<32;x++) {
@@ -257,9 +261,10 @@ void Arduibag::displayInfos() {
 void Arduibag::displayTravelTime() {
   char ti_range;
   
-    ti = rtc.getTime();
+    ti = rtc.getDateTime();
   
-    ti_range = (rtc.getUnixTime(ti) - rtc.getUnixTime(ti_init)) / 60;
+    //ti_range = (rtc.getUnixTime(ti) - rtc.getUnixTime(ti_init)) / 60;
+    ti_range = (ti.unixtime - ti_init.unixtime) / 60;
   
         matrix.fillScreen(matrix.Color333(0, 0, 0));
        
@@ -280,7 +285,7 @@ void Arduibag::displayTravelTime() {
 void Arduibag::displayTime() {
       
         // Display Time
-        ti = rtc.getTime();
+        ti = rtc.getDateTime();
         matrix.fillScreen(matrix.Color333(0, 0, 0)); 
         matrix.setCursor(1, 5);
         matrix.setTextSize(1);
@@ -288,8 +293,8 @@ void Arduibag::displayTime() {
         if(ti.hour<10)matrix.print(" ");
         matrix.print(ti.hour, DEC);
         matrix.print(":");
-        if(ti.min<10)matrix.print("0");
-        matrix.print(ti.min, DEC);
+        if(ti.minute<10)matrix.print("0");
+        matrix.print(ti.minute, DEC);
 }
 
 //----------------------------------
@@ -302,7 +307,7 @@ void Arduibag::displayTemperature(bool captor) {
           t = dht.readTemperature()-2; //light blue 
           //-2° for my personnal sensor
       } else {
-        t = rtc.getTemp()-1; //green
+        t = rtc.readTemperature()-1; //green
       }
       //Temperature (°C)
       
