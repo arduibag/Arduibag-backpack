@@ -12,7 +12,7 @@
 //Langage configuration
 // 0: US
 // 1: FR
-#define LANG 0
+#define LANG 1
 
 //Arduibag configuration
 Arduibag aBag(LANG);
@@ -33,16 +33,18 @@ void setup() {
   
   // Serial communication setup
   Serial.begin(9600);
-  
+  Serial.println("Lets Go !");
   //Arduibag setup
+  Serial.println("Begin start");
   aBag.begin(); 
-
+  Serial.println("Begin fin");
   //-------------------------------
   // Software initialization
   //-------------------------------
-    
+   Serial.println("Logo"); 
   //Display Logo
   aBag.displayLogo();
+  Serial.println("Logo fin");
   
   //Bluetooth synchronization
   //Wainting for the remote
